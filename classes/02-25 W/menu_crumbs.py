@@ -173,9 +173,6 @@ MENU_DATA = {
 from myImports import functions as fn
 
 
-# The stack keeps track of where we are in the menu system.
-# The LAST item in the list is always the current menu.
-menu_stack = ['HOME']
 prn_flg = True
 def display_goto(current_menu):
     # Clear the screen and print the title of the current menu
@@ -265,6 +262,9 @@ def leaf_action(leaf):
 # item in menu_stack.
 # -----------------------------------------
 
+# The stack keeps track of where we are in the menu system.
+# The LAST item in the list is always the current menu.
+menu_stack = ['HOME']
 while menu_stack:
 
     # The current menu ID is the last item

@@ -42,7 +42,7 @@ The left hand side (LHS) is provided below. Your job:
 OIM 3600 - Menu Navigation Assignment Rubric
 --------------------------------------------
 
-Student Name: ______________________
+Student Name: Lavar Buckmon
 Score: ______ / 100
 
 
@@ -120,6 +120,7 @@ THIS ASSIGNMENT WILL BE DUE 2/25 (NEXT WEDNESDAY) SO YOU CAN ASK QUESTIONS NEXT 
 
 
 import functions2 as fn2
+to_top = False  # State variable for exit-to-top feature
 
 while True:
     fn2.clear_screen()
@@ -128,12 +129,16 @@ while True:
     fn2.display_menu(options)
     choice = fn2.get_menu_choice(options)
 
+    to_top = False # Reset at top level
+
     if choice is None:
         print('exit top level menu')
         fn2.pause(1)
         break
     elif choice == 1:
         while True:
+            if to_top:
+                break
             fn2.clear_screen()
             fn2.print_header('Clients level 2')
             options=['Select Client', 'Create Client'] #level 2 options
@@ -146,6 +151,8 @@ while True:
                 break
             elif choice == 1:
                 while True:
+                    if to_top:
+                        break
                     fn2.clear_screen()
                     fn2.print_header('Select Client level 3')
                     options=['View Client Summary', 'Manage Client Cash'] #level 3 options
@@ -162,8 +169,15 @@ while True:
                         fn2.print_header('View Client Summary level 4')
                         # no options leaf
                         print('you have reached View Client Summary')
-                        print('returning to level 3') 
-                        fn2.pause(1)
+                        print('Type "top" to return to main menu, or press Enter for level 3')
+                        user_input = input().strip().lower()
+                        if user_input == 'top':
+                            to_top = True
+                            fn2.pause(1)
+                            break
+                        else:
+                            print('returning to level 3') 
+                            fn2.pause(1)
                         
                         continue # not needed but shows intent
                            
@@ -173,13 +187,22 @@ while True:
                         fn2.print_header('Manage Client Cash level 4')
                         # no options leaf
                         print('you have reached Manage Client Cash')
-                        print('returning to level 3') 
-                        fn2.pause(1)
+                        print('Type "top" to return to main menu, or press Enter for level 3')
+                        user_input = input().strip().lower()
+                        if user_input == 'top':
+                            to_top = True
+                            fn2.pause(1)
+                            break
+                        else:
+                            print('returning to level 3') 
+                            fn2.pause(1)
 
                         continue # not needed but shows intent
 
             elif choice == 2:
                 while True:
+                    if to_top:
+                        break
                     fn2.clear_screen()
                     fn2.print_header('Create Client level 3')
                     options=['New Individual', 'New Joint'] #level 3 options
@@ -196,8 +219,15 @@ while True:
                         fn2.print_header('New Individual level 4')
                         # no options leaf
                         print('you have reached New Individual')
-                        print('returning to level 3') 
-                        fn2.pause(1)
+                        print('Type "top" to return to main menu, or press Enter for level 3')
+                        user_input = input().strip().lower()
+                        if user_input == 'top':    
+                            to_top = True
+                            fn2.pause(1)
+                            break
+                        else:
+                            print('returning to level 3') 
+                            fn2.pause(1)
 
                         continue # not needed but shows intent
                            
@@ -207,26 +237,119 @@ while True:
                         fn2.print_header('New Joint level 4')
                         # no options leaf
                         print('you have reached New Joint')
-                        print('returning to level 3') 
-                        fn2.pause(1) 
+                        print('Type "top" to return to main menu, or press Enter for level 3')
+                        user_input = input().strip().lower()
+                        if user_input == 'top':
+                            to_top = True
+                            fn2.pause(1)
+                            break
+                        else:
+                            print('returning to level 3') 
+                            fn2.pause(1) 
 
                         continue # not needed but shows intent   
     elif choice == 2:
         while True:
+            if to_top:
+                break
             fn2.clear_screen()
             fn2.print_header('Portfolios level 2')            
             options = ['Trade', 'Performance'] # level 2
-            ''' TODO
-                 .
-                 .
-                 .
-                 .
-            '''
-            print("This side of our menu is not yet implemented. ") 
-            fn2.pause(2)
-            fn2.clear_screen()
-            exit()
-        
+            fn2.display_menu(options)
+            choice = fn2.get_menu_choice(options)
+            
+            if choice is None:
+                print('return to level 1')
+                fn2.pause(1)
+                break
+            elif choice == 1:  # Trade submenu
+                while True:
+                    if to_top:
+                        break
+                    fn2.clear_screen()
+                    fn2.print_header('Trade level 3')
+                    options=['Buy', 'Sell'] #level 3 options
+                    fn2.display_menu(options)
+                    choice = fn2.get_menu_choice(options)
 
+                    if choice is None:
+                        print('return to level 2')
+                        fn2.pause(1)
+                        break
+                    elif choice == 1:  # Buy
+                        fn2.clear_screen()
+                        fn2.print_header('Buy level 4')
+                        print('you have reached Buy')
+                        print('Type "top" to return to main menu, or press Enter for level 3')
+                        user_input = input().strip().lower()
+                        if user_input == 'top':
+                            to_top = True
+                            fn2.pause(1)
+                            break
+                        else:
+                            print('returning to level 3')
+                            fn2.pause(1)
+                        
+                        continue
+                           
+                    elif choice == 2:  # Sell
+                        fn2.clear_screen()
+                        fn2.print_header('Sell level 4')
+                        print('you have reached Sell')
+                        print('Type "top" to return to main menu, or press Enter for level 3')
+                        user_input = input().strip().lower()
+                        if user_input == 'top':
+                            to_top = True
+                            fn2.pause(1)
+                            break
+                        else:
+                            print('returning to level 3')
+                            fn2.pause(1)
 
+                        continue
 
+            elif choice == 2:  # Performance submenu
+                while True:
+                    if to_top:
+                        break
+                    fn2.clear_screen()
+                    fn2.print_header('Performance level 3')
+                    options=['Holdings Snapshot', 'P/L Report'] #level 3 options
+                    fn2.display_menu(options)
+                    choice = fn2.get_menu_choice(options)
+
+                    if choice is None:
+                        print('return to level 2')
+                        fn2.pause(1)
+                        break
+                    elif choice == 1:  # Holdings Snapshot
+                        fn2.clear_screen()
+                        fn2.print_header('Holdings Snapshot level 4')
+                        print('you have reached Holdings Snapshot')
+                        print('Type "top" to return to main menu, or press Enter for level 3')
+                        user_input = input().strip().lower()
+                        if user_input == 'top':
+                            to_top = True
+                            fn2.pause(1)
+                            break
+                        else:
+                            print('returning to level 3')
+                            fn2.pause(1)
+
+                        continue
+                           
+                    elif choice == 2:  # P/L Report
+                        fn2.clear_screen()
+                        fn2.print_header('P/L Report level 4')
+                        print('you have reached P/L Report')
+                        print('Type "top" to return to main menu, or press Enter for level 3')
+                        user_input = input().strip().lower()
+                        if user_input == 'top':
+                            to_top = True
+                            fn2.pause(1)
+                            break
+                        else:
+                            print('returning to level 3')
+                            fn2.pause(1) 
+
+                        continue    
