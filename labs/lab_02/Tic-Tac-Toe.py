@@ -272,5 +272,6 @@ def play_game() -> None:
         x_moves = not x_moves
 
 
-# To run the game:
-# play_game()
+# Run the game when file is executed directly
+if __name__ == "__main__":
+    play_game()
