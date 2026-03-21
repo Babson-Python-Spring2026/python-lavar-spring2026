@@ -1,3 +1,12 @@
+'''
+Substantially complete and shows real effort. There is still a meaningful bug 
+in get_computer_move(), but for an intro course this is still a respectable 
+submission with most of the program in place.
+
+Grade 85
+
+'''
+
 """
 TIC TAC TOE — FUNCTION SCAFFOLD
 
