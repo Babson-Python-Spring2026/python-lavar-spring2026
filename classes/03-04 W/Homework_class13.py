@@ -1,3 +1,35 @@
+'''
+Lavar — 7 / 10
+
+Overall
+
+Shows reasonable understanding but explanations are sometimes shallow.
+
+Strengths
+
+Correct identification of state variables.
+Reasonable symmetry explanation.
+
+Weaknesses
+
+Some comments repeat the code instead of explaining purpose.
+Invariants section somewhat superficial.
+
+AI likelihood
+
+Low.
+
+Reasons:
+
+Writing style is uneven and somewhat informal.
+AI answers usually appear more polished.
+
+Estimated probability: 10–20%
+
+GRADE 85
+
+'''
+
 """
 Homework: Reading Code with State / Transitions / Invariants (Tic-Tac-Toe)
 
