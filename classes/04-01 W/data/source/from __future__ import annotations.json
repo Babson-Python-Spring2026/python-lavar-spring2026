@@ -1,0 +1,328 @@
+from __future__ import annotations
+
+from pathlib import Path
+import pandas as pd
+import numpy as np
+import json
+from typing import Dict, List, Optional
+from dataclasses import dataclass, asdict
+from datetime import datetime
+
+BASE_DIR = Path(__file__).resolve().parent
+SOURCE_DIR = BASE_DIR.parent.parent / "data" / "source"
+
+PRICES_FILE = SOURCE_DIR / "portfolio_prices_raw_and_split_adjusted_20260331b.csv"
+DIVIDENDS_FILE = SOURCE_DIR / "portfolio_dividends_20260331b.csv"
+SPLITS_FILE = SOURCE_DIR / "portfolio_splits_true_splits_only_20260331b.csv"
+OUTPUT_FILE = SOURCE_DIR / "data_issues.csv"
+
+
+@dataclass
+class Split:
+    """Represents a single stock split event."""
+    date: str
+    ticker: str
+    split_ratio: float
+    
+    def to_dict(self) -> dict:
+        """Convert split to dictionary for JSON serialization."""
+        return asdict(self)
+    
+    def __str__(self) -> str:
+        return f"{self.ticker}: {self.split_ratio}-for-1 split on {self.date}"
+
+
+class SplitTracker:
+    """
+    Tracks and manages stock split events from portfolio data.
+    
+    Attributes:
+        splits_df: DataFrame containing raw split data
+        splits_by_ticker: Dictionary mapping tickers to list of Split objects
+        splits_by_date: Dictionary mapping dates to list of Split objects
+    """
+    
+    def __init__(self, splits_file: Path = SPLITS_FILE):
+        """
+        Initialize the SplitTracker by loading split data.
+        
+        Args:
+            splits_file: Path to the CSV file containing split data
+        """
+        self.splits_file = splits_file
+        self.splits_df = self._load_splits()
+        self.splits_by_ticker: Dict[str, List[Split]] = {}
+        self.splits_by_date: Dict[str, List[Split]] = {}
+        self._organize_splits()
+    
+    def _load_splits(self) -> pd.DataFrame:
+        """Load and validate splits data from CSV file."""
+        if not self.splits_file.exists():
+            raise FileNotFoundError(f"Splits file not found: {self.splits_file}")
+        
+        df = pd.read_csv(self.splits_file)
+        
+        # Validate required columns
+        required_cols = ['Date', 'Ticker', 'Split Ratio']
+        missing_cols = [col for col in required_cols if col not in df.columns]
+        if missing_cols:
+            raise ValueError(f"Missing required columns: {missing_cols}")
+        
+        # Clean and standardize data
+        df['Date'] = pd.to_datetime(df['Date']).dt.strftime('%Y-%m-%d')
+        df['Ticker'] = df['Ticker'].str.upper().str.strip()
+        df['Split Ratio'] = pd.to_numeric(df['Split Ratio'], errors='coerce')
+        
+        # Remove invalid rows
+        df = df.dropna(subset=['Date', 'Ticker', 'Split Ratio'])
+        
+        return df.sort_values('Date')
+    
+    def _organize_splits(self) -> None:
+        """Organize splits by ticker and date for efficient lookup."""
+        for _, row in self.splits_df.iterrows():
+            split = Split(
+                date=row['Date'],
+                ticker=row['Ticker'],
+                split_ratio=float(row['Split Ratio'])
+            )
+            
+            # Organize by ticker
+            if split.ticker not in self.splits_by_ticker:
+                self.splits_by_ticker[split.ticker] = []
+            self.splits_by_ticker[split.ticker].append(split)
+            
+            # Organize by date
+            if split.date not in self.splits_by_date:
+                self.splits_by_date[split.date] = []
+            self.splits_by_date[split.date].append(split)
+    
+    def get_splits_for_ticker(self, ticker: str) -> List[Split]:
+        """
+        Get all splits for a specific ticker.
+        
+        Args:
+            ticker: Stock ticker symbol
+            
+        Returns:
+            List of Split objects for the ticker
+        """
+        return self.splits_by_ticker.get(ticker.upper(), [])
+    
+    def get_splits_on_date(self, date: str) -> List[Split]:
+        """
+        Get all splits that occurred on a specific date.
+        
+        Args:
+            date: Date in YYYY-MM-DD format
+            
+        Returns:
+            List of Split objects for that date
+        """
+        return self.splits_by_date.get(date, [])
+    
+    def get_split_ratio(self, ticker: str, date: str) -> Optional[float]:
+        """
+        Get the split ratio for a ticker on a specific date.
+        
+        Args:
+            ticker: Stock ticker symbol
+            date: Date in YYYY-MM-DD format
+            
+        Returns:
+            Split ratio if found, None otherwise
+        """
+        splits = self.get_splits_for_ticker(ticker)
+        for split in splits:
+            if split.date == date:
+                return split.split_ratio
+        return None
+    
+    def get_all_tickers_with_splits(self) -> List[str]:
+        """Get list of all tickers that have had splits."""
+        return sorted(self.splits_by_ticker.keys())
+    
+    def get_split_count(self, ticker: Optional[str] = None) -> int:
+        """
+        Get count of splits.
+        
+        Args:
+            ticker: If provided, count splits for specific ticker. 
+                   Otherwise, count all splits.
+                   
+        Returns:
+            Number of splits
+        """
+        if ticker:
+            return len(self.get_splits_for_ticker(ticker))
+        return len(self.splits_df)
+    
+    def calculate_cumulative_adjustment(
+        self, 
+        ticker: str, 
+        start_date: str, 
+        end_date: str
+    ) -> float:
+        """
+        Calculate cumulative split adjustment factor between two dates.
+        
+        Args:
+            ticker: Stock ticker symbol
+            start_date: Start date (YYYY-MM-DD)
+            end_date: End date (YYYY-MM-DD)
+            
+        Returns:
+            Cumulative adjustment factor (multiply by this to adjust prices)
+        """
+        splits = self.get_splits_for_ticker(ticker)
+        adjustment = 1.0
+        
+        for split in splits:
+            if start_date <= split.date <= end_date:
+                adjustment *= split.split_ratio
+        
+        return adjustment
+    
+    def to_json(self, output_file: Optional[Path] = None) -> str:
+        """
+        Convert all split data to JSON format.
+        
+        Args:
+            output_file: If provided, save JSON to this file
+            
+        Returns:
+            JSON string representation of all splits
+        """
+        data = {
+            "metadata": {
+                "total_splits": len(self.splits_df),
+                "total_tickers": len(self.splits_by_ticker),
+                "date_range": {
+                    "earliest": self.splits_df['Date'].min(),
+                    "latest": self.splits_df['Date'].max()
+                }
+            },
+            "splits_by_ticker": {
+                ticker: [split.to_dict() for split in splits]
+                for ticker, splits in self.splits_by_ticker.items()
+            },
+            "splits_by_date": {
+                date: [split.to_dict() for split in splits]
+                for date, splits in self.splits_by_date.items()
+            }
+        }
+        
+        json_str = json.dumps(data, indent=2)
+        
+        if output_file:
+            output_file.write_text(json_str)
+            print(f"JSON data saved to: {output_file}")
+        
+        return json_str
+    
+    def get_summary_stats(self) -> Dict:
+        """Get summary statistics about splits in the portfolio."""
+        split_ratios = self.splits_df['Split Ratio'].values
+        
+        return {
+            "total_splits": len(self.splits_df),
+            "unique_tickers": len(self.splits_by_ticker),
+            "unique_dates": len(self.splits_by_date),
+            "split_ratio_stats": {
+                "min": float(np.min(split_ratios)),
+                "max": float(np.max(split_ratios)),
+                "mean": float(np.mean(split_ratios)),
+                "median": float(np.median(split_ratios))
+            },
+            "tickers_with_multiple_splits": [
+                ticker for ticker, splits in self.splits_by_ticker.items()
+                if len(splits) > 1
+            ]
+        }
+    
+    def generate_data_issues_report(self, output_file: Path = OUTPUT_FILE) -> pd.DataFrame:
+        """
+        Generate a report of potential data issues with splits.
+        
+        Args:
+            output_file: Path to save the issues report CSV
+            
+        Returns:
+            DataFrame containing identified issues
+        """
+        issues = []
+        
+        # Check for unusual split ratios
+        for _, row in self.splits_df.iterrows():
+            if row['Split Ratio'] < 1:
+                issues.append({
+                    'Date': row['Date'],
+                    'Ticker': row['Ticker'],
+                    'Issue': 'Reverse split (ratio < 1)',
+                    'Value': row['Split Ratio']
+                })
+            elif row['Split Ratio'] > 100:
+                issues.append({
+                    'Date': row['Date'],
+                    'Ticker': row['Ticker'],
+                    'Issue': 'Unusually large split ratio',
+                    'Value': row['Split Ratio']
+                })
+        
+        # Check for duplicate splits on same date
+        duplicates = self.splits_df.groupby(['Date', 'Ticker']).size()
+        duplicates = duplicates[duplicates > 1]
+        for (date, ticker), count in duplicates.items():
+            issues.append({
+                'Date': date,
+                'Ticker': ticker,
+                'Issue': 'Duplicate split entries',
+                'Value': count
+            })
+        
+        issues_df = pd.DataFrame(issues)
+        
+        if not issues_df.empty and output_file:
+            issues_df.to_csv(output_file, index=False)
+            print(f"Data issues report saved to: {output_file}")
+        
+        return issues_df
+    
+    def __repr__(self) -> str:
+        return f"SplitTracker({len(self.splits_df)} splits across {len(self.splits_by_ticker)} tickers)"
+
+
+# Example usage
+if __name__ == "__main__":
+    # Initialize tracker
+    tracker = SplitTracker()
+    
+    # Get NFLX splits
+    nflx_splits = tracker.get_splits_for_ticker("NFLX")
+    print(f"NFLX splits: {nflx_splits}")
+    
+    # Get split on specific date
+    split_ratio = tracker.get_split_ratio("NFLX", "2025-11-17")
+    print(f"NFLX split ratio on 2025-11-17: {split_ratio}")
+    
+    # Get summary statistics
+    stats = tracker.get_summary_stats()
+    print(f"\nSummary stats:\n{json.dumps(stats, indent=2)}")
+    
+    # Export to JSON
+    json_output = SOURCE_DIR / "portfolio_splits.json"
+    tracker.to_json(json_output)
+    
+    # Generate data issues report
+    issues = tracker.generate_data_issues_report()
+    if not issues.empty:
+        print(f"\nFound {len(issues)} potential issues")
+        print(issues)
+    
+    # Calculate cumulative adjustment for date range
+    adjustment = tracker.calculate_cumulative_adjustment(
+        "NFLX", 
+        "2025-01-01", 
+        "2025-12-31"
+    )
+    print(f"\nNFLX cumulative split adjustment for 2025: {adjustment}x")

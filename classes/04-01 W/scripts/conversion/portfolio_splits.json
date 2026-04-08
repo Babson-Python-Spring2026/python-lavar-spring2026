@@ -1,0 +1,23 @@
+import pandas as pd
+import numpy as np
+
+df = pd.read_csv('portfolio_prices_raw_and_split_adjusted_20260331b.csv')
+df['date'] = pd.to_datetime(df['date'])
+df = df.sort_values(['ticker', 'date'])
+
+splits = []
+for ticker, group in df.groupby('ticker'):
+    group['ratio'] = group['adjusted_price'] / group['raw_price']
+    group['ratio_change'] = group['ratio'].pct_change()
+    # Detect jumps >10% or drops <90%
+    split_dates = group[(group['ratio_change'] > 0.1) | (group['ratio_change'] < -0.1)]
+    for _, row in split_dates.iterrows():
+        # Infer ratio (e.g., if ratio doubled, it's 1:2 split)
+        inferred_ratio = round(1 / row['ratio']) if row['ratio'] < 1 else round(row['ratio'])
+        splits.append({
+            'ticker': ticker,
+            'date': row['date'].strftime('%Y-%m-%d'),
+            'ratio': f"{inferred_ratio}:1",
+            'evidence': f"Raw price: {row['raw_price']}, Adjusted: {row['adjusted_price']}"
+        })
+# Output as list

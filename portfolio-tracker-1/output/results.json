@@ -1,0 +1,41 @@
+{
+    "portfolio": {
+        "total_value": 100000,
+        "assets": [
+            {
+                "ticker": "AAPL",
+                "quantity": 50,
+                "average_price": 150.00,
+                "current_price": 175.00,
+                "value": 8750.00
+            },
+            {
+                "ticker": "GOOGL",
+                "quantity": 20,
+                "average_price": 2500.00,
+                "current_price": 2800.00,
+                "value": 56000.00
+            },
+            {
+                "ticker": "TSLA",
+                "quantity": 10,
+                "average_price": 700.00,
+                "current_price": 800.00,
+                "value": 8000.00
+            }
+        ],
+        "total_gain_loss": 2000.00
+    },
+    "splits": [
+        {
+            "ticker": "AAPL",
+            "split_ratio": "4-for-1",
+            "date": "2020-08-31"
+        },
+        {
+            "ticker": "TSLA",
+            "split_ratio": "5-for-1",
+            "date": "2020-08-31"
+        }
+    ]
+}
