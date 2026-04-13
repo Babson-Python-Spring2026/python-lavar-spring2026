@@ -2,8 +2,11 @@ import json
 from pathlib import Path
 
 
-TRANSACTIONS_FILE = Path(__file__).parent / "transactions.json"
-
+# Navigate from script location to system/transactions/
+BASE_DIR = Path(__file__).resolve().parent.parent.parent  # Up to 04-06 M/
+SYSTEM_DIR = BASE_DIR / "system" / "transactions"
+SYSTEM_DIR.mkdir(parents=True, exist_ok=True)
+TRANSACTIONS_FILE = SYSTEM_DIR / "transactions.json"
 
 def load_transactions(file_path=TRANSACTIONS_FILE):
     """
