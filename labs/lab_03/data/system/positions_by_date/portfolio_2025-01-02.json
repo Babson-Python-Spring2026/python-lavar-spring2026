@@ -1,0 +1,162 @@
+{
+    "date": "2025-01-02",
+    "total_value": 3999999.998599999,
+    "cash": {
+        "ticker": "$$$$",
+        "shares": 3473067.98,
+        "price": 1.0,
+        "market_value": 3473067.98
+    },
+    "positions": [
+        {
+            "ticker": "AAPL",
+            "shares": 50.0,
+            "price": 243.850006,
+            "market_value": 12192.5003
+        },
+        {
+            "ticker": "ABBV",
+            "shares": 50.0,
+            "price": 179.440002,
+            "market_value": 8972.0001
+        },
+        {
+            "ticker": "ABT",
+            "shares": 50.0,
+            "price": 113.440002,
+            "market_value": 5672.0001
+        },
+        {
+            "ticker": "ACN",
+            "shares": 50.0,
+            "price": 348.820007,
+            "market_value": 17441.00035
+        },
+        {
+            "ticker": "ADBE",
+            "shares": 50.0,
+            "price": 441.0,
+            "market_value": 22050.0
+        },
+        {
+            "ticker": "AIG",
+            "shares": 50.0,
+            "price": 72.980003,
+            "market_value": 3649.00015
+        },
+        {
+            "ticker": "AMD",
+            "shares": 50.0,
+            "price": 120.629997,
+            "market_value": 6031.49985
+        },
+        {
+            "ticker": "AMGN",
+            "shares": 50.0,
+            "price": 259.279999,
+            "market_value": 12963.99995
+        },
+        {
+            "ticker": "AMT",
+            "shares": 50.0,
+            "price": 181.029999,
+            "market_value": 9051.49995
+        },
+        {
+            "ticker": "AMZN",
+            "shares": 50.0,
+            "price": 220.220001,
+            "market_value": 11011.00005
+        },
+        {
+            "ticker": "AVGO",
+            "shares": 50.0,
+            "price": 231.979996,
+            "market_value": 11598.9998
+        },
+        {
+            "ticker": "AXP",
+            "shares": 50.0,
+            "price": 298.429993,
+            "market_value": 14921.499650000002
+        },
+        {
+            "ticker": "BA",
+            "shares": 50.0,
+            "price": 171.869995,
+            "market_value": 8593.499749999999
+        },
+        {
+            "ticker": "BAC",
+            "shares": 50.0,
+            "price": 44.290001,
+            "market_value": 2214.5000499999996
+        },
+        {
+            "ticker": "BK",
+            "shares": 50.0,
+            "price": 77.410004,
+            "market_value": 3870.5002
+        },
+        {
+            "ticker": "BKNG",
+            "shares": 50.0,
+            "price": 4925.290039,
+            "market_value": 246264.50195000003
+        },
+        {
+            "ticker": "BLK",
+            "shares": 50.0,
+            "price": 1017.400024,
+            "market_value": 50870.0012
+        },
+        {
+            "ticker": "BMY",
+            "shares": 50.0,
+            "price": 56.790001,
+            "market_value": 2839.5000499999996
+        },
+        {
+            "ticker": "BRK-B",
+            "shares": 50.0,
+            "price": 451.100006,
+            "market_value": 22555.0003
+        },
+        {
+            "ticker": "C",
+            "shares": 50.0,
+            "price": 69.940002,
+            "market_value": 3497.0001
+        },
+        {
+            "ticker": "CAT",
+            "shares": 50.0,
+            "price": 359.769989,
+            "market_value": 17988.49945
+        },
+        {
+            "ticker": "CHTR",
+            "shares": 50.0,
+            "price": 349.350006,
+            "market_value": 17467.5003
+        },
+        {
+            "ticker": "CL",
+            "shares": 50.0,
+            "price": 90.550003,
+            "market_value": 4527.50015
+        },
+        {
+            "ticker": "CMCSA",
+            "shares": 50.0,
+            "price": 35.07029,
+            "market_value": 1753.5145
+        },
+        {
+            "ticker": "COF",
+            "shares": 50.0,
+            "price": 178.710007,
+            "market_value": 8935.50035
+        }
+    ]
+}

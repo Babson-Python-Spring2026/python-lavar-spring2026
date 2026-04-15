@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p /c/rho-prospect-signal-engine)",
+      "Read(//c//**)",
+      "Read(//c/Program Files/**)",
+      "Read(//c/Users/lbuckmon1/AppData/Roaming/**)",
+      "Read(//c/Users/lbuckmon1/AppData/Local/**)"
+    ]
+  }
+}
